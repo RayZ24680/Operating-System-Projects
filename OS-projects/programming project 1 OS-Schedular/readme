@@ -1,0 +1,9 @@
+usage:
+cmd: >gcc code.c -o code
+     >code < input.txt
+
+WSL: >gcc code.c -o code
+     >./code < input.txt
+
+pwsh: >gcc code.c -o code
+      >Get-Content input.txt | ./code

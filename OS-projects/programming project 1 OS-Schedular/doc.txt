@@ -1,0 +1,116 @@
+
+1. OVERVIEW
+-----------
+This program simulates a simplified operating-system scheduler
+supporting two classes of processes (REAL-TIME and INTERACTIVE)
+and three types of requests (CPU, DISK, TTY). It models device
+usage, deadlines, preemption, and system-wide statistics such as
+utilization and deadline misses.The simulation begins at absoluteTime = 0 ms and advances
+one millisecond at a time until all queues and devices become idle.
+
+
+2. PROCESS AND REQUEST STRUCTURES
+---------------------------------
+Struct Process:
+- type: REALTIME or INTERACTIVE
+- state: READY, RUNNING, WAITING, TERMINATED
+- arrival_time: when the process becomes eligible
+- deadline: only for REALTIME processes
+- requestList: linked list of CPU, DISK, or TTY requests
+- sequenceNum: unique ID
+- terminalID: used to prevent multiple TTY processes from sharing the same terminal
+- next: pointer used for queue linking
+
+Struct Request:
+- type: CPU, DISK, or TTY
+- remaining_time: milliseconds left to complete the request
+- start_time: timestamp when the request begins
+- next: pointer for request list linking
+
+
+3. INPUT FORMAT AND PARSING (readFile)
+--------------------------------------
+The input file describes processes in the following format:
+
+INTERACTIVE   arrival-time
+CPU           required-time
+TTY           required-time
+...
+REAL-TIME     arrival-time
+DEADLINE      required-time
+CPU           required-time
+DISK          required-time
+...
+
+The read function:
+1. Creates a new Process when encountering INTERACTIVE or REAL-TIME.
+2. Reads a DEADLINE line for REAL-TIME processes.
+3. Appends each request to the process’s requestList.
+4. When a process finishes parsing, it is:
+   - Copied into processTable (for record-keeping)
+   - Enqueued into the appropriate ready queue
+
+A deep copy is used for processTable to avoid pointer corruption
+between lists.
+
+
+4. QUEUES AND SCHEDULING
+-------------------------
+Ready Queues:
+- realTimeQueue (FIFO)
+- interactiveQueue (FIFO)
+
+REALTIME processes always preempt INTERACTIVE processes.
+
+TTY Queue:
+- runningTTY holds processes currently using terminals.
+- Terminal IDs prevent multiple processes from using the same TTY.
+
+Devices:
+- CPU: only one process may run at a time
+- Disk: only one process may run at a time
+- TTY: multiple processes may run, but only one per terminal ID
+
+
+5. TIME ADVANCEMENT (incrementTime)
+-----------------------------------
+Each millisecond:
+1. absoluteTime increments.
+2. remaining_time decrements for active requests.
+3. cpuBusyTime increments if CPU is active.
+4. diskBusyTime increments if disk is active.
+5. Completion and deadline checks occur:
+   - If a request finishes, it is removed and the process moves to
+     the next queue.
+   - If a REALTIME deadline is missed, the request is dropped and
+     counted as a miss.
+6. Scheduler selects the next eligible process for CPU, disk, or TTY.
+
+The simulation ends when:
+- All queues are empty, and
+- CPU, disk, and TTY are idle.
+
+
+6. DEADLINE HANDLING
+---------------------
+REALTIME processes have strict deadlines. If absoluteTime exceeds
+the deadline while a REALTIME request is running:
+- The request is aborted.
+- The process either terminates or returns to a queue.
+- missedDeadline increments.
+
+
+7. STATISTICS AND SUMMARY
+--------------------------
+At the end of the simulation, the program prints:
+
+- Completed real-time processes
+- Completed interactive processes
+- Percentage of real-time processes that missed deadlines
+- Total disk accesses
+- Average disk access duration
+- Total time elapsed
+- CPU utilization  = cpuBusyTime  / absoluteTime
+- Disk utilization = diskBusyTime / absoluteTime
+
+Busy time is accumulated every tick while the device is active.

@@ -1,0 +1,22 @@
+INTERACTIVE     300
+CPU             200
+DISK             30
+REAL-TIME       400
+DEADLINE        690
+CPU             200
+DISK            100
+REAL-TIME       400
+DEADLINE       1390
+CPU             400
+DISK             10
+INTERACTIVE     600
+CPU             500
+DISK            300
+TTY              10
+REAL-TIME      1000
+DEADLINE       2000
+CPU             100
+TTY              50
+DISK            300
+TTY              20
+                 

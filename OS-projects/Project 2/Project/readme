@@ -1,0 +1,17 @@
+Run in Linux/powershell terminal:
+>gcc code.c -o code
+>./code addresses.txt
+
+Diverting output to output.txt:
+>./code addresses.txt > output.txt
+
+Run in Command Prompt:
+>gcc code.c -o code
+>code addresses.txt
+
+Output redirection in CMD:
+>code addresses.txt > output.txt
+
+NOTE: When opening the output.txt file in VS-code refresh the encoding if random characters like (獹捩污愠摤敲獳›㠲㌰) appear or open the output.txt file in notepad. writing from PWSH creates a UTF-16LE encoded file whereas CMD and WSL create a UTF-8 file.
+
+Recommended Terminal/Shell : PowerShell.
